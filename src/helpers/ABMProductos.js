@@ -25,6 +25,15 @@ export const agregarProducto = (producto) =>{
 
 }
 
+export const agregarCompra = (producto) =>{
+    
+     const productosRef = firestore().collection("ListaCompras");
+
+     productosRef.doc(producto.id).set({
+        precio: producto.precio, codigo: producto.codigo})
+
+}
+
 // update usuarios set precio=....
 export const editarPrecio = (id, nuevoPrecio) =>{
         console.log(id, nuevoPrecio)

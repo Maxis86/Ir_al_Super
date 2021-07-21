@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import { Modal, StyleSheet, Text, Pressable, Alert, TextInput, View, TouchableOpacity } from 'react-native';
 
 import  Icon  from 'react-native-vector-icons/Ionicons'
+import Iconelements from 'react-native-elements'
 
-import { editarPrecio, eliminarProducto } from '../helpers/ABMProductos'
+import { agregarCompra, editarPrecio, eliminarProducto } from '../helpers/ABMProductos'
 
 
 export const FlatListStockItems = ({stockItem}:any) => {
@@ -20,10 +21,28 @@ export const FlatListStockItems = ({stockItem}:any) => {
         editarPrecio(producto, precio)
     }
 
+    const nuevoProductoCompra = (nuevaCompra:any) => {
+        
+        agregarCompra(nuevaCompra)
+        
+    }
+
     return(
         <View style = {styles.card}>
-                <View style = {styles.container}>
 
+
+                <View style = {styles.container}>
+                    <TouchableOpacity
+                        onPress={() => nuevoProductoCompra(stockItem)}
+                        style={{ marginRight: 14}}
+                    >
+                        <Icon
+                            name= "duplicate"
+                            color="#21cc12"
+                            size= {30}  
+                        />
+                    </TouchableOpacity>
+                
                     <Text style = {styles.itemText}>
                         {stockItem.id} 
                     </Text>
@@ -45,7 +64,7 @@ export const FlatListStockItems = ({stockItem}:any) => {
                                 />
                             </TouchableOpacity>
 
-                            {/* Alerta no se ingresaron todos los datos */}
+                            {/* Modal editar precio producto */}
                             <Modal
                                 animationType="slide"
                                 transparent={true}

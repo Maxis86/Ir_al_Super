@@ -1,24 +1,26 @@
 
 import React, { useEffect, useState } from 'react'
-import { FlatList, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import { FlatList, Text, View, TouchableOpacity, ScrollView, TouchableWithoutFeedback, StatusBar, SafeAreaView } from 'react-native';
 import { StyleSheet } from 'react-native'
-import { useNavigation } from '@react-navigation/core'
+
 import firestore from '@react-native-firebase/firestore';
+// import {SwipeListView} from 'react-native-swipe-list-view'
 
 import  Icon  from 'react-native-vector-icons/Ionicons'
 import { FlatListStockItems } from '../components/FlatListStockItems'
 
 import { HeaderTitle } from '../components/HeaderTitle'
-import { styles } from '../theme/appTheme'
-
+import { useNavigation } from '@react-navigation/core'
+import { FlatListStockCompra } from '../components/FlatListStockCompra';
 
 export const HomeScreen = () => {
 
-    const [productosStock, setProductoStock] = useState([]);
+    const [proximaCompra, setProximaCompra] = useState([]);
+    const navigation = useNavigation ();
 
     useEffect(() => {
 
-        firestore().collection('Productos').onSnapshot((snap) => {
+        firestore().collection('ListaCompras').onSnapshot((snap) => {
         // se actualiza cada vez que hay un cambio
 
         const productos:any = [];
@@ -29,12 +31,10 @@ export const HomeScreen = () => {
             ...snapHijo.data(),
             });
         });
-        setProductoStock(productos);
+        setProximaCompra(productos);
         
         });
     }, []);
-
-    const navigation = useNavigation ();
 
     const itemSeparator = () =>{
         return (
@@ -43,57 +43,62 @@ export const HomeScreen = () => {
                 opacity: 0.4,
                 marginVertical:8
             }}>
-
             </View>
         )
     }
 
+    const renderItem = ({ item }:any) => (
+        // <HeaderTitle title={item.id} />
+        <FlatListStockCompra stockItem={item}/>
+      );
     return (
-        
-            <View style={styles.globalMargin}>
-                
-                <HeaderTitle title="Principal"/>
+            
+            <View>
+            <Text>Home</Text>
 
-                <View style = {stylesHome.container}>
+            <TouchableOpacity 
+                onPress={()=>navigation.navigate('NuevoProductoScreen')}
+                // style={stylesHome.editarFoto}
+            >
+                <Icon
+                    name= "arrow-redo"
+                    color="grey"
+                    size= {25}  
+                />
+            </TouchableOpacity>
 
-                    <Text style={stylesHome.title}>Ingresar Producto</Text>
-
-                    <TouchableOpacity 
-                        onPress={()=>navigation.navigate('NuevoProductoScreen')}
-                        style={stylesHome.editarFoto}
-                    >
-                        <Icon
-                            name= "pencil-outline"
-                            color="grey"
-                            size= {25}  
-                        />
-                    </TouchableOpacity>
-
-
-                </View>
-                <View style = {{marginTop:30}}>
+            <View style = {{marginTop:30}}>
                     
-                    {(productosStock)?
+                    {(proximaCompra)?
+                    <View style={styles.container}>
+                        {/* // <FlatList
+                        //     data={proximaCompra}
+                        //     renderItem={({item}) => (<FlatListStockItems stockItem={item}/>)}
+                        //     keyExtractor={(item)=>item.id}
+                        //     ListHeaderComponent={()=> 
+                        //                             <View style={stylesHome.container}>
+                        //                                 <Text style = {{flex:1, fontSize: 15}}>Producto</Text>
+                        //                                 <Text style = {{marginRight: 22, fontSize: 15}}>Precio</Text>
+                        //                                 <Text style = {{marginRight: 5, fontSize: 15}}>Editar</Text>
+                        //                                 <Text style = {{fontSize: 15, marginBottom: 15}}>Borrar</Text>
+                        //                             </View>
+                        //                         } // por si quiero un título
+                        //     ItemSeparatorComponent={()=>itemSeparator()}
+                        // /> */}
+
+
                         <FlatList
-                            data={productosStock}
-                            renderItem={({item}) => <FlatListStockItems stockItem={item}/>}
-                            keyExtractor={(item)=>item.id}
-                            ListHeaderComponent={()=> 
-                                                    <View style={stylesHome.container}>
-                                                        <Text style = {{flex:1, fontSize: 15}}>Producto</Text>
-                                                        <Text style = {{marginRight: 22, fontSize: 15}}>Precio</Text>
-                                                        <Text style = {{marginRight: 5, fontSize: 15}}>Editar</Text>
-                                                        <Text style = {{fontSize: 15, marginBottom: 15}}>Borrar</Text>
-                                                    </View>
-                                                } // por si quiero un título
-                            ItemSeparatorComponent={()=>itemSeparator()}
+                            data={proximaCompra}
+                            renderItem={renderItem}
+                            keyExtractor={item => item.id}
                         />
+                    </View>
+                        
                     : null
                     }
                     
-                </View>
-            </View>
-       
+             </View>
+    </View>
     )
 }
 
@@ -101,13 +106,13 @@ const stylesHome = StyleSheet.create({
 
     container:{
         flexDirection:'row',
-    },
-    title:{
-        flex:1,
-        fontSize:20,
-        fontWeight: 'bold',
-    },
-    editarFoto:{
-        marginLeft: 20
+    }
+});
+
+const styles = StyleSheet.create({
+
+    container:{
+        // flex: 1,
+        marginTop: StatusBar.currentHeight || 0,
     }
 });
