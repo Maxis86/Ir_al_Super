@@ -2,21 +2,22 @@
 import React, { useEffect, useState } from 'react'
 import { FlatList, Text, View, TouchableOpacity, ScrollView, TouchableWithoutFeedback, StatusBar, SafeAreaView } from 'react-native';
 import { StyleSheet } from 'react-native'
+import { useNavigation } from '@react-navigation/core'
 
 import firestore from '@react-native-firebase/firestore';
 // import {SwipeListView} from 'react-native-swipe-list-view'
 
 import  Icon  from 'react-native-vector-icons/Ionicons'
-import { FlatListStockItems } from '../components/FlatListStockItems'
-
-import { HeaderTitle } from '../components/HeaderTitle'
-import { useNavigation } from '@react-navigation/core'
 import { FlatListStockCompra } from '../components/FlatListStockCompra';
+import { Button } from 'react-native-elements';
+import { HeaderTitle } from '../components/HeaderTitle';
+
 
 export const HomeScreen = () => {
 
     const [proximaCompra, setProximaCompra] = useState([]);
     const navigation = useNavigation ();
+    const [cantidad, setCantidad] = useState(0)
 
     useEffect(() => {
 
@@ -36,16 +37,6 @@ export const HomeScreen = () => {
         });
     }, []);
 
-    const itemSeparator = () =>{
-        return (
-            <View style={{
-                borderBottomWidth: 1,
-                opacity: 0.4,
-                marginVertical:8
-            }}>
-            </View>
-        )
-    }
 
     const renderItem = ({ item }:any) => (
         // <HeaderTitle title={item.id} />
@@ -53,66 +44,56 @@ export const HomeScreen = () => {
       );
     return (
             
-            <View>
-            <Text>Home</Text>
-
-            <TouchableOpacity 
-                onPress={()=>navigation.navigate('NuevoProductoScreen')}
-                // style={stylesHome.editarFoto}
-            >
-                <Icon
-                    name= "arrow-redo"
-                    color="grey"
-                    size= {25}  
-                />
-            </TouchableOpacity>
-
-            <View style = {{marginTop:30}}>
-                    
-                    {(proximaCompra)?
-                    <View style={styles.container}>
-                        {/* // <FlatList
-                        //     data={proximaCompra}
-                        //     renderItem={({item}) => (<FlatListStockItems stockItem={item}/>)}
-                        //     keyExtractor={(item)=>item.id}
-                        //     ListHeaderComponent={()=> 
-                        //                             <View style={stylesHome.container}>
-                        //                                 <Text style = {{flex:1, fontSize: 15}}>Producto</Text>
-                        //                                 <Text style = {{marginRight: 22, fontSize: 15}}>Precio</Text>
-                        //                                 <Text style = {{marginRight: 5, fontSize: 15}}>Editar</Text>
-                        //                                 <Text style = {{fontSize: 15, marginBottom: 15}}>Borrar</Text>
-                        //                             </View>
-                        //                         } // por si quiero un título
-                        //     ItemSeparatorComponent={()=>itemSeparator()}
-                        // /> */}
-
-
-                        <FlatList
-                            data={proximaCompra}
-                            renderItem={renderItem}
-                            keyExtractor={item => item.id}
-                        />
-                    </View>
+            <View style = {styles.container}>
+                <View style = {styles.header}>
+                    <HeaderTitle title="Mis Compras"/>
+                   
+                    <Button
+                        onPress={()=>navigation.navigate('NuevoProductoScreen')}
+                        icon={
+                            <Icon
+                            name="arrow-redo"
+                            size={15}
+                            color="white"
+                            />
+                        }
+                        iconRight
+                        title="Ir a mi stock "
+                    />
+                   
+                </View>
+                <View style = {{marginTop:30}}>
                         
-                    : null
-                    }
-                    
-             </View>
+                        {(proximaCompra)?
+                        <View style={styles.containerFlatList}>
+                            <FlatList
+                                data={proximaCompra}
+                                renderItem={renderItem}
+                                keyExtractor={item => item.id}
+                            />
+                        </View>
+                        : null
+                        }
+                        
+                </View>
     </View>
     )
 }
 
-const stylesHome = StyleSheet.create({
-
-    container:{
-        flexDirection:'row',
-    }
-});
-
 const styles = StyleSheet.create({
-
     container:{
+
+    },
+    header:{
+
+    },
+    titulo:{
+        fontSize: 35
+    },
+    containerFlatList:{
         // flex: 1,
         marginTop: StatusBar.currentHeight || 0,
-    }
+        marginBottom:10
+    },
+
 });

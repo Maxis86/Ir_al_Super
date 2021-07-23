@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { FlatList, Text, View, TouchableOpacity, Alert, Modal, Pressable,TextInput } from 'react-native';
 import { StyleSheet } from 'react-native'
-
+import { Button, Input } from 'react-native-elements';
 
 import  Icon  from 'react-native-vector-icons/Ionicons'
 import firestore from '@react-native-firebase/firestore';
-
 
 import { FlatListStockItems } from '../components/FlatListStockItems'
 import { HeaderTitle } from '../components/HeaderTitle'
@@ -90,11 +89,23 @@ export const NuevoProductoScreen = ({navigation}:any) => {
     return (
 
         <View style={{flex:1}}>
- 
+            
             <View >
                             
                 <HeaderTitle title="Mi lista de Productos"/>
 
+                <Button
+                        onPress={()=>navigation.navigate('HomeScreen')}
+                        icon={
+                            <Icon
+                            name="chevron-back-outline"
+                            size={15}
+                            color="white"
+                            />
+                        }
+                        
+                        title="Volver a mis compras "
+                    />
                 <TouchableOpacity
                         style = {stylesScreen.submitButton}
                         onPress={() => setModalVisible(true)}
@@ -122,6 +133,7 @@ export const NuevoProductoScreen = ({navigation}:any) => {
                                 autoCapitalize="words" 
                                 onChangeText= {(value) => onChange(value, 'nombreProducto')}
                             />
+                            
 
                             <TextInput 
                                 style ={stylesScreen.inputStyle}
@@ -202,6 +214,7 @@ const stylesScreen = StyleSheet.create({
         backgroundColor: '#3913e4',
         height: 40,
         width: 150,
+        marginTop: 10,
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 20,

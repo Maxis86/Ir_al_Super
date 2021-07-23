@@ -21,18 +21,39 @@ export const agregarProducto = (producto) =>{
     const productosRef = firestore().collection("Productos");
 
     productosRef.doc(producto.nombreProducto).set({
-        precio: producto.precioProducto, codigo: producto.codigoBarrasProducto})
+        precio: producto.precioProducto, codigo: producto.codigoBarrasProducto, cantidad: 1})
 
 }
 
 export const agregarCompra = (producto) =>{
     
-     const productosRef = firestore().collection("ListaCompras");
+     // Create a reference to the SF doc.
+        var sfDocRef = firestore().collection("ListaCompras").doc(producto.id);
 
-     productosRef.doc(producto.id).set({
-        precio: producto.precio, codigo: producto.codigo})
+        firestore().runTransaction(async (transaction) => 
+        {
 
-}
+                const sfDoc = await transaction.get(sfDocRef);
+                if (!sfDoc.exists) {
+                        sfDocRef.set({
+                                precio: producto.precio, codigo: producto.codigo, cantidad: producto.cantidad 
+                        })
+                                .then(() => {
+                                        console.log("Document successfully written!");
+                                })
+                                .catch((error) => {
+                                        console.error("Error writing document: ", error);
+                                });
+                }
+                else {
+                        var newPopulation = sfDoc.data().cantidad + 1;
+                        console.log(newPopulation);
+
+                        transaction.update(sfDocRef, { cantidad: newPopulation });
+                }
+        })
+} 
+
 
 // update usuarios set precio=....
 export const editarPrecio = (id, nuevoPrecio) =>{
